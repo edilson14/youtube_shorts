@@ -11,7 +11,34 @@ import 'package:youtube_shorts/src/source/interface_videos_source_controller.dar
 
 part 'mixin_video_control_shortcut.dart';
 
-class ShortsController extends ValueNotifier<ShortsState>
+class _MyValueNotifier extends ValueNotifier {
+  bool _disposed = false;
+
+  @override
+  T get value => _value;
+  T _value;
+  set value(T newValue) {
+    if (_value == newValue) {
+      return;
+    }
+    if (_disposed) {
+      return;
+    }
+    _value = newValue;
+    notifyListeners();
+  }
+
+  @override
+  String toString() => '${describeIdentity(this)}($value)';
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+}
+
+class ShortsController extends _MyValueNotifier<ShortsState>
     with MixinVideoControlShortcut {
   final Lock _lock;
   final VideosSourceController _youtubeVideoInfoService;
