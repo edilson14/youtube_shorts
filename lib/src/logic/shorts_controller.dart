@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart' hide Video;
 import 'package:youtube_shorts/src/data/shorts_controller_settings.dart';
@@ -13,10 +13,18 @@ part 'mixin_video_control_shortcut.dart';
 
 class _MyValueNotifier extends ValueNotifier<ShortsState> {
   bool _disposed = false;
+  ShortsState _value;
+
+  _MyValueNotifier(this._value) : super(_value) {
+    if (kFlutterMemoryAllocationsEnabled) {
+      ChangeNotifier.maybeDispatchObjectCreation(this);
+    }
+  }
 
   @override
   ShortsState get value => _value;
-  ShortsState _value;
+
+  @override
   set value(ShortsState newValue) {
     if (_value == newValue) {
       return;
