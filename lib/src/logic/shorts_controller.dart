@@ -11,7 +11,7 @@ import 'package:youtube_shorts/src/source/interface_videos_source_controller.dar
 
 part 'mixin_video_control_shortcut.dart';
 
-class _MyValueNotifier extends ValueNotifier<T> {
+class _MyValueNotifier<T> extends ValueNotifier {
   bool _disposed = false;
 
   @override
