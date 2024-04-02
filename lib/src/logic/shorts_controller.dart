@@ -83,6 +83,8 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
 
   int prevIndex = -1;
 
+  bool _disposed = false;
+
   @override
   int currentIndex = -1;
 
@@ -266,6 +268,10 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
               value = newState;
             }
 
+            if (_disposed) {
+              return;
+            }
+
             final player = Player(
                 configuration: PlayerConfiguration(
               vo: video.hostedVideoInfo.url.toString(),
@@ -338,6 +344,7 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
 
   @override
   void dispose() {
+    _disposed = true;
     super.dispose();
     _youtubeVideoInfoService.dispose();
 
