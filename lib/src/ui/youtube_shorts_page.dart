@@ -83,6 +83,9 @@ class YoutubeShortsPage extends StatefulWidget {
 
   final double? initialVolume;
 
+  /// Callback provides status is loading widget  shown
+  final void Function(bool loading)? onLoading;
+
   /// The widget that will display the video.
   const YoutubeShortsPage({
     super.key,
@@ -96,6 +99,7 @@ class YoutubeShortsPage extends StatefulWidget {
     this.onCurrentVideoPlayCallback,
     this.willHaveDefaultShortsControllers = true,
     this.initialVolume,
+    this.onLoading,
   });
 
   @override
@@ -148,6 +152,7 @@ class _YoutubeShortsPageState extends State<YoutubeShortsPage> {
               shortsVideoData: data,
               errorWidget: widget.errorWidget,
               loadingWidget: widget.loadingWidget,
+              onLoading: widget.onLoading,
               builder: (context, videoData) {
                 return YoutubeShortsVideoPlayer(
                   willHaveDefaultShortsControllers:
