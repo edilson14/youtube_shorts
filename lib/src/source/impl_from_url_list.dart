@@ -10,7 +10,7 @@ class VideosSourceControllerFromUrlList extends VideosSourceController
   VideosSourceControllerFromUrlList({
     required List<String> videoIds,
   }) : _videoIds = Map.fromEntries(videoIds
-            .mapper((value, isFirst, isLast, index) => MapEntry(index, value)));
+      .mapper((value, isFirst, isLast, index) => MapEntry(index, value)));
 
   @override
   Future<VideoStats?> getVideoByIndex(int index) async {
@@ -31,4 +31,7 @@ class VideosSourceControllerFromUrlList extends VideosSourceController
       return response;
     });
   }
+
+  @override
+  Stream<ShortsStateError> get getErrorStream => const Stream.empty();
 }

@@ -17,6 +17,8 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
     _obtainChannelsUploadList();
   }
 
+  final _errorController = StreamController<ShortsStateError>.broadcast();
+
   @override
   Future<VideoStats?> getVideoByIndex(int index) async {
     final cacheVideo = _cacheVideo[index];
@@ -76,7 +78,11 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
           video = null;
         }
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
+      _errorController.add(ShortsStateError(
+        error: error,
+        stackTrace: stackTrace,
+      ));
       video = null;
     }
 
@@ -93,7 +99,11 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
     final MuxedStreamInfo info;
     try {
       info = await getMuxedInfo(video.id.value);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      _errorController.add(ShortsStateError(
+        error: error,
+        stackTrace: stackTrace,
+      ));
       return _fetchNext(index);
     }
     final VideoStats response = (videoData: video, hostedVideoInfo: info);
@@ -105,7 +115,7 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
   void _obtainChannelsUploadList() async {
     for (final id in _channelsIds) {
       try {
-        final uploads = _yt.channels.getUploadsFromPage(
+        final uploads = await _yt.channels.getUploadsFromPage(
           ChannelId(id),
           videoSorting: VideoSorting.newest,
           videoType: onlyVerticalVideos ? VideoType.shorts : VideoType.normal,
@@ -113,10 +123,22 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
 
         _data[id]!.complete(uploads);
       } catch (error, stackTrace) {
+        _errorController.add(ShortsStateError(
+          error: error,
+          stackTrace: stackTrace,
+        ));
         final exception = error;
         _data[id]!.completeError(exception, stackTrace);
-        rethrow;
       }
     }
+  }
+
+  @override
+  Stream<ShortsStateError> get getErrorStream => _errorController.stream;
+
+  @override
+  void dispose() {
+    _errorController.close();
+    super.dispose();
   }
 }
