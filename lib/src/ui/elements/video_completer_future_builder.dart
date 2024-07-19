@@ -44,9 +44,6 @@ class VideoCompleterFutureBuilder extends StatelessWidget {
   /// The index of the video.
   final int index;
 
-  /// Callback provides status is loading widget  shown
-  final void Function(bool loading)? onLoading;
-
   const VideoCompleterFutureBuilder({
     Key? key,
     required this.index,
@@ -54,7 +51,6 @@ class VideoCompleterFutureBuilder extends StatelessWidget {
     required this.shortsVideoData,
     this.errorWidget,
     this.loadingWidget,
-    this.onLoading,
   }) : super(key: key);
 
   @override
@@ -65,7 +61,6 @@ class VideoCompleterFutureBuilder extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           final data = snapshot.data;
           if (snapshot.hasError || data == null) {
-            onLoading?.call(false);
             return errorWidget?.call(
                   snapshot.error!,
                   snapshot.stackTrace,
@@ -75,8 +70,6 @@ class VideoCompleterFutureBuilder extends StatelessWidget {
 
           return builder(context, data);
         }
-
-        onLoading?.call(true);
 
         return loadingWidget ?? const YoutubeShortsDefaultLoadingWidget();
       },

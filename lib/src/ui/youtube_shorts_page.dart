@@ -129,6 +129,7 @@ class _YoutubeShortsPageState extends State<YoutubeShortsPage> {
       controller: widget.controller,
       errorWidget: widget.errorWidget,
       loadingWidget: widget.loadingWidget,
+      onLoading: widget.onLoading,
       child: PageView.builder(
         scrollDirection: Axis.vertical,
         controller: pageController,
@@ -152,7 +153,6 @@ class _YoutubeShortsPageState extends State<YoutubeShortsPage> {
               shortsVideoData: data,
               errorWidget: widget.errorWidget,
               loadingWidget: widget.loadingWidget,
-              onLoading: widget.onLoading,
               builder: (context, videoData) {
                 return YoutubeShortsVideoPlayer(
                   willHaveDefaultShortsControllers:
