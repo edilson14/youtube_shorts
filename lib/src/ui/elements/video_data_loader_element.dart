@@ -59,16 +59,11 @@ class _VideoDataLoaderElementState extends State<VideoDataLoaderElement> {
           return child!;
         } else if (shortsState.isErrorState) {
           shortsState as ShortsStateError;
-          return GestureDetector(
-            onTap: () {
-              widget.controller.notifyCurrentIndex(0);
-            },
-            child: widget.errorWidget?.call(
-                  shortsState.error,
-                  shortsState.stackTrace,
-                ) ??
-                const YoutubeShortsDefaultErrorWidget(),
-          );
+          return widget.errorWidget?.call(
+                shortsState.error,
+                shortsState.stackTrace,
+              ) ??
+              const YoutubeShortsDefaultErrorWidget();
         } else {
           return widget.loadingWidget ??
               const YoutubeShortsDefaultLoadingWidget();

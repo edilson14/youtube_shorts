@@ -250,7 +250,7 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
           } else if (item.value == null &&
               (currentState?.videos.containsKey(item.key) ?? false) == false) {
             try {
-              /// These completes on isolate might throw exception which requires internal try catch
+              /// These completes on isolate(urlController or recurse onIDs) might throw exception which requires internal try catch
               final VideoStats? video =
                   await _youtubeVideoInfoService.getVideoByIndex(
                 index,

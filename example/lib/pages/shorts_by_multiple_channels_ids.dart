@@ -144,7 +144,6 @@ class _ShortsByMultipleChannelIdsDisplayState
   void initState() {
     super.initState();
     controller = ShortsController(
-      indexsWhereWillContainAds: [3, 8],
       youtubeVideoSourceController:
           VideosSourceController.fromMultiYoutubeChannelsIds(
         channelsIds: ['UC7M8xa0carx1w-Sz8Y6CHPw'],

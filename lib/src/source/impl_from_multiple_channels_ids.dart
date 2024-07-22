@@ -38,13 +38,21 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
   /// The video interation number inside the channel interation
   int _videoInterationNumber = 0;
 
+  /// here is dangerous recurse might lead to infinite loop when no network
+  /// as temporary fix add return null on each try and error throw
   Future<VideoStats?> _fetchNext(int index) async {
     final String channelId = _channelsIds[_channelInterationNumber];
     final ChannelUploadsList channelUploads;
 
     try {
       channelUploads = (await _data[channelId]?.future)!;
-    } catch (_) {
+    } catch (error) {
+      if (error is HttpClientClosedException ||
+          error is SocketException ||
+          error is ClientException) {
+        rethrow;
+      }
+
       final isLastChannel = _channelInterationNumber == _channelsIds.length - 1;
       if (isLastChannel) {
         _channelInterationNumber = 0;
@@ -78,11 +86,12 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
           video = null;
         }
       }
-    } catch (error, stackTrace) {
-      _errorController.add(ShortsStateError(
-        error: error,
-        stackTrace: stackTrace,
-      ));
+    } catch (error) {
+      if (error is HttpClientClosedException ||
+          error is SocketException ||
+          error is ClientException) {
+        rethrow;
+      }
       video = null;
     }
 
@@ -99,11 +108,12 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
     final MuxedStreamInfo info;
     try {
       info = await getMuxedInfo(video.id.value);
-    } catch (error, stackTrace) {
-      _errorController.add(ShortsStateError(
-        error: error,
-        stackTrace: stackTrace,
-      ));
+    } catch (error) {
+      if (error is HttpClientClosedException ||
+          error is SocketException ||
+          error is ClientException) {
+        rethrow;
+      }
       return _fetchNext(index);
     }
     final VideoStats response = (videoData: video, hostedVideoInfo: info);
