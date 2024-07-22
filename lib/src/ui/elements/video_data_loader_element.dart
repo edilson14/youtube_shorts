@@ -37,16 +37,12 @@ class VideoDataLoaderElement extends StatefulWidget {
 
   final Widget child;
 
-  /// Callback provides status is loading widget  shown
-  final void Function(bool loading)? onLoading;
-
   const VideoDataLoaderElement({
     super.key,
     required this.controller,
     required this.errorWidget,
     required this.loadingWidget,
     required this.child,
-    this.onLoading,
   });
 
   @override
@@ -60,10 +56,8 @@ class _VideoDataLoaderElementState extends State<VideoDataLoaderElement> {
       valueListenable: widget.controller,
       builder: (context, shortsState, child) {
         if (shortsState.isDataState) {
-          widget.onLoading?.call(false);
           return child!;
         } else if (shortsState.isErrorState) {
-          widget.onLoading?.call(false);
           shortsState as ShortsStateError;
           return widget.errorWidget?.call(
                 shortsState.error,
@@ -71,7 +65,6 @@ class _VideoDataLoaderElementState extends State<VideoDataLoaderElement> {
               ) ??
               const YoutubeShortsDefaultErrorWidget();
         } else {
-          widget.onLoading?.call(true);
           return widget.loadingWidget ??
               const YoutubeShortsDefaultLoadingWidget();
         }

@@ -17,6 +17,8 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
     _obtainChannelsUploadList();
   }
 
+  final _errorController = StreamController<ShortsStateError>.broadcast();
+
   @override
   Future<VideoStats?> getVideoByIndex(int index) async {
     final cacheVideo = _cacheVideo[index];
@@ -36,13 +38,21 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
   /// The video interation number inside the channel interation
   int _videoInterationNumber = 0;
 
+  /// here is dangerous recurse might lead to infinite loop when no network
+  /// as temporary fix add return null on each try and error throw
   Future<VideoStats?> _fetchNext(int index) async {
     final String channelId = _channelsIds[_channelInterationNumber];
     final ChannelUploadsList channelUploads;
 
     try {
       channelUploads = (await _data[channelId]?.future)!;
-    } catch (_) {
+    } catch (error) {
+      if (error is HttpClientClosedException ||
+          error is SocketException ||
+          error is ClientException) {
+        rethrow;
+      }
+
       final isLastChannel = _channelInterationNumber == _channelsIds.length - 1;
       if (isLastChannel) {
         _channelInterationNumber = 0;
@@ -76,7 +86,12 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
           video = null;
         }
       }
-    } catch (_) {
+    } catch (error) {
+      if (error is HttpClientClosedException ||
+          error is SocketException ||
+          error is ClientException) {
+        rethrow;
+      }
       video = null;
     }
 
@@ -94,6 +109,11 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
     try {
       info = await getMuxedInfo(video.id.value);
     } catch (error) {
+      if (error is HttpClientClosedException ||
+          error is SocketException ||
+          error is ClientException) {
+        rethrow;
+      }
       return _fetchNext(index);
     }
     final VideoStats response = (videoData: video, hostedVideoInfo: info);
@@ -105,7 +125,9 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
   void _obtainChannelsUploadList() async {
     for (final id in _channelsIds) {
       try {
-        final uploads = _yt.channels.getUploadsFromPage(
+        _data[id] = Completer<ChannelUploadsList>();
+
+        final uploads = await _yt.channels.getUploadsFromPage(
           ChannelId(id),
           videoSorting: VideoSorting.newest,
           videoType: onlyVerticalVideos ? VideoType.shorts : VideoType.normal,
@@ -113,10 +135,31 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
 
         _data[id]!.complete(uploads);
       } catch (error, stackTrace) {
+        _errorController.add(ShortsStateError(
+          error: error,
+          stackTrace: stackTrace,
+        ));
         final exception = error;
         _data[id]!.completeError(exception, stackTrace);
-        rethrow;
       }
     }
+  }
+
+  @override
+  Stream<ShortsStateError> get getErrorStream => _errorController.stream;
+
+  @override
+  void dispose() {
+    _errorController.close();
+    super.dispose();
+  }
+
+  @override
+  void onRefresh() {
+    // Reset the completer map
+    _data.clear();
+    _data.addEntries(_channelsIds
+        .map((value) => MapEntry(value, Completer<ChannelUploadsList>())));
+    _obtainChannelsUploadList();
   }
 }

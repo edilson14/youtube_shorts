@@ -14,6 +14,7 @@ dependencies:
   youtube_shorts:
     path: '../'
   enchanted_collection: ^1.2.0
+  connectivity_plus: ^6.0.2
 
 dev_dependencies:
   flutter_test:

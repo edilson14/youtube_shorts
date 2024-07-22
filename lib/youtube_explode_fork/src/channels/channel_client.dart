@@ -143,40 +143,44 @@ class ChannelClient {
     VideoSorting videoSorting = VideoSorting.newest,
     VideoType videoType = VideoType.normal,
   }) async {
-    channelId = ChannelId.fromString(channelId);
-    final page = await ChannelUploadPage.get(
-      _httpClient,
-      (channelId as ChannelId).value,
-      videoSorting.code,
-      videoType,
-    );
+    try {
+      channelId = ChannelId.fromString(channelId);
+      final page = await ChannelUploadPage.get(
+        _httpClient,
+        (channelId as ChannelId).value,
+        videoSorting.code,
+        videoType,
+      );
 
-    final channel = await get(channelId);
+      final channel = await get(channelId);
 
-    return ChannelUploadsList(
-      page.uploads
-          .map(
-            (e) => Video(
-              e.videoId,
-              e.videoTitle,
-              channel.title,
-              channelId,
-              e.videoUploadDate.toDateTime(),
-              e.videoUploadDate,
-              null,
-              '',
-              e.videoDuration,
-              ThumbnailSet(e.videoId.value),
-              null,
-              Engagement(e.videoViews, null, null),
-              false,
-            ),
-          )
-          .toList(),
-      channel.title,
-      channelId,
-      page,
-      _httpClient,
-    );
+      return ChannelUploadsList(
+        page.uploads
+            .map(
+              (e) => Video(
+                e.videoId,
+                e.videoTitle,
+                channel.title,
+                channelId,
+                e.videoUploadDate.toDateTime(),
+                e.videoUploadDate,
+                null,
+                '',
+                e.videoDuration,
+                ThumbnailSet(e.videoId.value),
+                null,
+                Engagement(e.videoViews, null, null),
+                false,
+              ),
+            )
+            .toList(),
+        channel.title,
+        channelId,
+        page,
+        _httpClient,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 }

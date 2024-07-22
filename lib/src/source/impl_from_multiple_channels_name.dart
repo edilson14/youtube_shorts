@@ -125,4 +125,13 @@ class VideosSourceControllerFromMultipleYoutubeChannelsName
       }),
     );
   }
+
+  @override
+  // Unused since we use channelFromIds controller
+  Stream<ShortsStateError> get getErrorStream => const Stream.empty();
+
+  @override
+  void onRefresh() {
+    // TODO: implement onRefresh
+  }
 }

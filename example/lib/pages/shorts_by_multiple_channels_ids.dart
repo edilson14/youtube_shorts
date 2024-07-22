@@ -125,6 +125,7 @@ class _ShortsByMultileChannelsIdsState
 
 class ShortsByMultipleChannelIdsDisplay extends StatefulWidget {
   final List<String> channelsIds;
+
   const ShortsByMultipleChannelIdsDisplay({
     super.key,
     required this.channelsIds,
@@ -143,10 +144,9 @@ class _ShortsByMultipleChannelIdsDisplayState
   void initState() {
     super.initState();
     controller = ShortsController(
-      indexsWhereWillContainAds: [3, 8],
       youtubeVideoSourceController:
           VideosSourceController.fromMultiYoutubeChannelsIds(
-        channelsIds: getMockedChannelIds(),
+        channelsIds: ['UC7M8xa0carx1w-Sz8Y6CHPw'],
       ),
     );
   }

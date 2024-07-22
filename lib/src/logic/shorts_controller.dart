@@ -79,6 +79,9 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
             UnmodifiableListView(indexsWhereWillContainAds),
         super(const ShortsStateLoading()) {
     notifyCurrentIndex(0);
+    _youtubeVideoInfoService.getErrorStream.listen((stateError) {
+      value = stateError;
+    });
   }
 
   int prevIndex = -1;
@@ -246,62 +249,70 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
             }
           } else if (item.value == null &&
               (currentState?.videos.containsKey(item.key) ?? false) == false) {
-            final VideoStats? video =
-                await _youtubeVideoInfoService.getVideoByIndex(
-              index,
-            );
+            try {
+              /// These completes on isolate(urlController or recurse onIDs) might throw exception which requires internal try catch
+              final VideoStats? video =
+                  await _youtubeVideoInfoService.getVideoByIndex(
+                index,
+              );
 
-            if (video == null) continue;
+              if (video == null) continue;
 
-            if (currentState == null) {
-              currentState = ShortsStateWithData(videos: {
-                item.key: ShortsVideoData(video: VideoDataCompleter()),
-              });
+              if (currentState == null) {
+                currentState = ShortsStateWithData(videos: {
+                  item.key: ShortsVideoData(video: VideoDataCompleter()),
+                });
 
-              value = currentState;
-            } else if (currentState.videos.containsKey(item.key) == false) {
-              final newState = ShortsStateWithData(videos: {
-                ...currentState.videos,
-                item.key: ShortsVideoData(video: VideoDataCompleter()),
-              });
-              currentState = newState;
-              value = newState;
-            }
+                value = currentState;
+              } else if (currentState.videos.containsKey(item.key) == false) {
+                final newState = ShortsStateWithData(videos: {
+                  ...currentState.videos,
+                  item.key: ShortsVideoData(video: VideoDataCompleter()),
+                });
+                currentState = newState;
+                value = newState;
+              }
 
-            if (_disposed) {
-              return;
-            }
+              if (_disposed) {
+                return;
+              }
 
-            final player = Player(
-                configuration: PlayerConfiguration(
-              vo: video.hostedVideoInfo.url.toString(),
-            ));
-            final hostedVideoUrl =
-                Media.normalizeURI(video.hostedVideoInfo.url.toString());
-
-            final willPlay =
-                _settings.startWithAutoplay && item.key == currentIndex;
-
-            await player.open(Media(hostedVideoUrl), play: willPlay);
-
-            await player.setVolume(_settings.startVideoWithVolume);
-
-            await player.setPlaylistMode(
-              _settings.videosWillBeInLoop
-                  ? PlaylistMode.loop
-                  : PlaylistMode.none,
-            );
-
-            final ShortsData? state = currentState.videos[item.key];
-
-            if (state is ShortsVideoData) {
-              state.video.complete((
-                videoController: VideoController(
-                  player,
-                  configuration: _defaultVideoControllerConfiguration,
-                ),
-                videoData: video,
+              final player = Player(
+                  configuration: PlayerConfiguration(
+                vo: video.hostedVideoInfo.url.toString(),
               ));
+              final hostedVideoUrl =
+                  Media.normalizeURI(video.hostedVideoInfo.url.toString());
+
+              final willPlay =
+                  _settings.startWithAutoplay && item.key == currentIndex;
+
+              await player.open(Media(hostedVideoUrl), play: willPlay);
+
+              await player.setVolume(_settings.startVideoWithVolume);
+
+              await player.setPlaylistMode(
+                _settings.videosWillBeInLoop
+                    ? PlaylistMode.loop
+                    : PlaylistMode.none,
+              );
+
+              final ShortsData? state = currentState.videos[item.key];
+
+              if (state is ShortsVideoData) {
+                state.video.complete((
+                  videoController: VideoController(
+                    player,
+                    configuration: _defaultVideoControllerConfiguration,
+                  ),
+                  videoData: video,
+                ));
+              }
+            } on Exception catch (e, stackTrace) {
+              value = ShortsStateError(
+                error: e,
+                stackTrace: stackTrace,
+              );
             }
           }
         }
@@ -342,12 +353,15 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
     return MapEntry(index, targetController);
   }
 
+  void onRefresh() {
+    _youtubeVideoInfoService.onRefresh();
+    notifyCurrentIndex(0);
+  }
+
   @override
   void dispose() {
     _disposed = true;
-    super.dispose();
     _youtubeVideoInfoService.dispose();
-
     ShortsStateWithData? currentState = _getCurrentState();
     final videos = currentState?.videos;
     videos?.forEach((key, value) async {
@@ -358,34 +372,9 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
         }
       } finally {}
     });
+    super.dispose();
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 1 Role

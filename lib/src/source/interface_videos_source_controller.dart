@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:enchanted_collection/enchanted_collection.dart';
+import 'package:http/http.dart';
 import 'package:youtube_shorts/src/data/type_defs.dart';
+import 'package:youtube_shorts/src/logic/shorts_state.dart';
 import 'package:youtube_shorts/src/source/isolate_mixin_helpers.dart';
 import 'package:youtube_shorts/youtube_explode_fork/youtube_explode_dart.dart';
 
@@ -9,9 +12,13 @@ import 'package:easy_isolate_mixin/easy_isolate_mixin.dart'
     as easy_isolate_mixin;
 
 part 'impl_from_url_list.dart';
+
 part 'impl_from_channel_name.dart';
+
 part 'impl_from_multiple_channels_name.dart';
+
 part 'impl_from_channel_id.dart';
+
 part 'impl_from_multiple_channels_ids.dart';
 
 abstract class VideosSourceController {
@@ -124,6 +131,10 @@ abstract class VideosSourceController {
 
     return muxedStreamInfo;
   }
+
+  Stream<ShortsStateError> get getErrorStream;
+
+  void onRefresh();
 }
 
 List<String> getMockedChannelIds() {
