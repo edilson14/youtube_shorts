@@ -353,6 +353,11 @@ class ShortsController extends _MyValueNotifier with MixinVideoControlShortcut {
     return MapEntry(index, targetController);
   }
 
+  void onRefresh() {
+    _youtubeVideoInfoService.onRefresh();
+    notifyCurrentIndex(0);
+  }
+
   @override
   void dispose() {
     _disposed = true;

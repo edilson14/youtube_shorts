@@ -133,6 +133,8 @@ abstract class VideosSourceController {
   }
 
   Stream<ShortsStateError> get getErrorStream;
+
+  void onRefresh();
 }
 
 List<String> getMockedChannelIds() {

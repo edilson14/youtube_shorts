@@ -34,4 +34,9 @@ class VideosSourceControllerFromUrlList extends VideosSourceController
 
   @override
   Stream<ShortsStateError> get getErrorStream => const Stream.empty();
+
+  @override
+  void onRefresh() {
+    // TODO: implement onRefresh
+  }
 }

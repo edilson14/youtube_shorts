@@ -11,4 +11,4 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "example/video_downloader_flutter/"
-#    - "lib/youtube_explode_fork/**"
+    - "lib/youtube_explode_fork/**"

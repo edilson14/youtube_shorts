@@ -125,6 +125,8 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
   void _obtainChannelsUploadList() async {
     for (final id in _channelsIds) {
       try {
+        _data[id] = Completer<ChannelUploadsList>();
+
         final uploads = await _yt.channels.getUploadsFromPage(
           ChannelId(id),
           videoSorting: VideoSorting.newest,
@@ -150,5 +152,14 @@ class VideosSourceControllerFromMultipleYoutubeChannelsIds
   void dispose() {
     _errorController.close();
     super.dispose();
+  }
+
+  @override
+  void onRefresh() {
+    // Reset the completer map
+    _data.clear();
+    _data.addEntries(_channelsIds
+        .map((value) => MapEntry(value, Completer<ChannelUploadsList>())));
+    _obtainChannelsUploadList();
   }
 }
