@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart' show VideoController;
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_shorts/src/data/shorts_controller_settings.dart';
-import 'package:youtube_shorts/youtube_explode_fork/src/videos/streams/muxed_stream_info.dart';
-import 'package:youtube_shorts/youtube_explode_fork/src/videos/video.dart';
 
 /// The video data (url, title, description etc...) and the hosted video info.
 typedef VideoStats = ({Video videoData, MuxedStreamInfo hostedVideoInfo});
