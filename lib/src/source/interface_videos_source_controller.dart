@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'package:enchanted_collection/enchanted_collection.dart';
 import 'package:http/http.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_shorts/src/data/type_defs.dart';
 import 'package:youtube_shorts/src/logic/shorts_state.dart';
 import 'package:youtube_shorts/src/source/isolate_mixin_helpers.dart';
-import 'package:youtube_shorts/youtube_explode_fork/youtube_explode_dart.dart';
 
 import 'package:easy_isolate_mixin/easy_isolate_mixin.dart'
     if (dart.library.html) 'package:youtube_shorts/src/source/isolate_helper_mixin_web.dart'

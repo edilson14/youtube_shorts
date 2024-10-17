@@ -12,5 +12,9 @@ export 'src/ui/youtube_shorts_horizontal_stories_section.dart';
 export 'package:media_kit/media_kit.dart' show MediaKit;
 export 'package:media_kit_video/media_kit_video.dart'
     show VideoController, VideoControllerConfiguration;
-export 'youtube_explode_fork/youtube_explode_dart.dart'
+// export 'youtube_explode_fork/youtube_explode_dart.dart'
+
+//     show Video, MuxedStreamInfo;
+
+export 'package:youtube_explode_dart/youtube_explode_dart.dart'
     show Video, MuxedStreamInfo;

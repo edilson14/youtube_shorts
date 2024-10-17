@@ -1,8 +1,5 @@
 import 'package:easy_isolate_mixin/easy_isolate_mixin.dart';
-import 'package:youtube_shorts/youtube_explode_fork/src/videos/streams/muxed_stream_info.dart';
-import 'package:youtube_shorts/youtube_explode_fork/src/videos/streams/stream_manifest.dart';
-import 'package:youtube_shorts/youtube_explode_fork/src/videos/video.dart';
-import 'package:youtube_shorts/youtube_explode_fork/src/youtube_explode_base.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 mixin IsolateMixinHelpers on IsolateHelperMixin {
   Future<MuxedStreamInfo> getMuxedInfo(String videoId) async {
